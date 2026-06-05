@@ -20,8 +20,9 @@ const BOOKS = {
 };
 
 let currentTranslation = "kjv";
+let selectedBookBtn = null;
 
-function setTranslation(translation) {
+function setTranslation(translation) { // Sets the translation based on what the user wants
   currentTranslation = translation;
   document.getElementById("btn-kjv").classList.remove("active");
   document.getElementById("btn-web").classList.remove("active");
@@ -32,7 +33,7 @@ function handleSearch() {
   const query = document.getElementById("search-input").value.trim();
   if (!query) return;
   showResults([
-    {
+    { // Returns placeholder data at the moment 
       reference: "John 3:16",
       text: "For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life."
     }
@@ -53,9 +54,15 @@ function showResults(verses) {
   `).join("");
 }
 
-function browseBook(book) {
-  document.getElementById("search-input").value = book;
-  handleSearch();
+function browseBook(book,btnElement) {
+    console.log("book:", book, "btnElement:", btnElement);
+    if (selectedBookBtn) {
+        selectedBookBtn.classList.remove("selected");
+    }
+    selectedBookBtn = btnElement;
+    selectedBookBtn.classList.add("selected");
+    document.getElementById("search-input").value = book;
+    handleSearch();  
 }
 
 function buildBookButtons() {
@@ -66,7 +73,7 @@ function buildBookButtons() {
     const btn = document.createElement("button");
     btn.className = "book-btn";
     btn.textContent = book;
-    btn.onclick = () => browseBook(book);
+    btn.onclick = () => browseBook(book, btn);
     oldDiv.appendChild(btn);
   });
 
@@ -74,7 +81,7 @@ function buildBookButtons() {
     const btn = document.createElement("button");
     btn.className = "book-btn";
     btn.textContent = book;
-    btn.onclick = () => browseBook(book);
+    btn.onclick = () => browseBook(book, btn);
     newDiv.appendChild(btn);
   });
 }

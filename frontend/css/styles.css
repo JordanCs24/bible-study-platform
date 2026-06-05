@@ -171,6 +171,12 @@ main {
   border-color: #1a3a2a;
 }
 
+.book-btn:selected {
+    background-color: #1a3a2a;
+    color: #f9f6f0;
+    border-color: #1a3a2a;
+}
+
 footer {
   text-align: center;
   padding: 2rem;
