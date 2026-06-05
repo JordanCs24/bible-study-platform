@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bible Study Platform</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <header>
+    <div class="header-content">
+      <h1>Bible Study Platform</h1>
+      <div class="translation-toggle">
+        <label>Translation:</label>
+        <button class="toggle-btn active" id="btn-kjv" onclick="setTranslation('kjv')">KJV</button>
+        <button class="toggle-btn" id="btn-web" onclick="setTranslation('web')">WEB</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="search-section">
+      <div class="search-bar">
+        <input
+          type="text"
+          id="search-input"
+          placeholder="Search by keyword, topic, or describe a verse..."
+        />
+        <button onclick="handleSearch()">Search</button>
+      </div>
+    </section>
+
+    <section class="results-section">
+      <div id="results-container">
+        <p class="placeholder-text">Your results will appear here.</p>
+      </div>
+    </section>
+
+    <section class="browse-section">
+      <h2>Browse by Book</h2>
+      <div class="testament-group">
+        <h3>Old Testament</h3>
+        <div id="old-testament-books" class="book-grid"></div>
+      </div>
+      <div class="testament-group">
+        <h3>New Testament</h3>
+        <div id="new-testament-books" class="book-grid"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>Built on AWS. KJV and WEB translations are public domain.</p>
+  </footer>
+
+  <script src="js/app.js"></script>
+
+</body>
+</html>
