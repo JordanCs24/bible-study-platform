@@ -7,7 +7,14 @@ verse_pattern = re.compile(r'^[\d\s]*[a-zA-Z]+[\s\w]*\d+:\d+$')
 BUCKET_NAME = 'bible-platform-jordan'
 
 KJV_PREFIX = 'bible-data/kjv/'
-
+# Function to handle all edge cases 
+# Ex: 1Chronicals3:12
+def normalize_query(query):
+    query = query.strip()
+    query = re.sub(r'(\d+)\s*:\s*(\d+)', r'\1:\2', query)
+    query = re.sub(r'([a-zA-Z])(\d)', r'\1 \2', query)
+    query = re.sub(r'(\d)([a-zA-Z])', r'\1 \2', query)
+    return query.title()
 
 # Step 1: Receive the event from API Gateway and extract the query string
 def lambda_handler(event, context):
@@ -15,9 +22,17 @@ def lambda_handler(event, context):
     # Step 2 Validation: if the query is empty or less than 3 characters:
     #   return a message saying "please enter a more specific search"
     if(query is None):
-        print("Your search field is empty")
-    elif(len(query) < 3):
-        print("please enter a more specific search")
+        return {
+            'statusCode': 400,
+            'body': json.dumps({'error': 'Your search field is empty'})
+        }
+        
+    query = normalize_query(query) #Handles the edgecases
+    if(len(query) < 3):
+        return {
+            'statusCode': 400,
+            'body': json.dumps({'error': 'Please enter a more specific search'})
+        }
     # Step 3: Detect the query type and route accordingl
     # if the query matches the verse reference pattern (book name + colon + numbers)
     elif (re.match(verse_pattern, query)):
@@ -36,7 +51,7 @@ def lambda_handler(event, context):
         print("Type 3: Conversational question")
         return {
             'statusCode': 200,
-            'body': json.dumps({'type': 'keyword', 'query': query})
+            'body': json.dumps({'type': 'conversational', 'query': query})
         }
 
     
@@ -52,10 +67,25 @@ def lambda_handler(event, context):
 
 ### _TESTING_ ###
 if __name__ == '__main__':
-    test_event = {
-        'queryStringParameters': {
-            'q': 'love'
-        }
-    }
-    result = lambda_handler(test_event, None)
-    print(result)
+    tests = [
+        {'queryStringParameters': {'q': 'John 3:16'}},
+        {'queryStringParameters': {'q': 'love'}},
+        {'queryStringParameters': {'q': 'Are we married in heaven'}}
+    ]
+    for test in tests:
+        result = lambda_handler(test, None)
+        print(result)
+        print('---')
+        
+#Testing Normalization function
+if __name__ == '__main__':
+    test_queries = [
+        "john3:16",
+        "JOHN 3 : 16",
+        "1chronicles 3:5",
+        "1Chronicals3:12",
+        "love",
+        "Are we married in heaven"
+    ]
+    for q in test_queries:
+        print(f"Input: {q} → Output: {normalize_query(q)}")
