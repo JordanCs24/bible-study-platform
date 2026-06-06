@@ -16,3 +16,6 @@ and WEB translations.
 - Phase 2: AI-powered verse finder and theme explorer
 - Phase 3: Data analytics and visualizations
 - Phase 4: User accounts, sharing, and production polish
+
+## Data Sources
+KJV Bible data sourced from [aruljohn/Bible-kjv](https://github.com/aruljohn/Bible-kjv), public domain.
