@@ -15,16 +15,31 @@ def normalize_query(query):
     query = re.sub(r'([a-zA-Z])(\d)', r'\1 \2', query)
     query = re.sub(r'(\d)([a-zA-Z])', r'\1 \2', query)
     return query.title()
-#TO DO: Write the logic for the this function
+#TO DO: Write the logic for  this function
 def parse_verse_reference(query):
-    # your comment outline here
     #Parse it to check to see if the
-    #John 3:16          → single verse
-    #John 3:16-20       → verse range
-    #John 3             → first 5 verses of chapter
-    #1 John 3:16        → books with number prefix
-    #john3:16           → no space, handled by normalization
-    #JOHN 3:16          → caps, handled by normalization
+    parts = query.rsplit(' ', 1)
+    book = parts[0]
+    
+    #John 3:16-20 → verse range
+    if ':' in parts[1] and '-' in parts[1]:
+        chapter_verse = parts[1].split(':')
+        chapter = chapter_verse[0]
+        verse_range = chapter_verse[1].split('-')
+        verse_start = verse_range[0]
+        verse_end = verse_range[1]
+        return {
+            'book': book,
+            'chapter': chapter,
+            'verse_start': verse_start,
+            'verse_end': verse_end,
+            'type':r 'range'
+        }
+    elif:
+        #John 3:16 → single verse
+
+    else:
+        #John 3 → first 5 verses of chapter
 
 # Step 1: Receive the event from API Gateway and extract the query string
 def lambda_handler(event, context):
@@ -73,6 +88,7 @@ def lambda_handler(event, context):
 
 ### _TESTING_ ###
 if __name__ == '__main__':
+    print("--- Handler Tests ---")
     tests = [
         {'queryStringParameters': {'q': 'John 3:16'}},
         {'queryStringParameters': {'q': 'love'}},
@@ -82,9 +98,8 @@ if __name__ == '__main__':
         result = lambda_handler(test, None)
         print(result)
         print('---')
-        
-#Testing Normalization function
-if __name__ == '__main__':
+
+    print("--- Normalization Tests ---")
     test_queries = [
         "john3:16",
         "JOHN 3 : 16",
