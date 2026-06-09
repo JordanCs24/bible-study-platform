@@ -33,7 +33,7 @@ def parse_verse_reference(query):
             'chapter': chapter,
             'verse_start': verse_start,
             'verse_end': verse_end,
-            'type':r 'range'
+            'type': 'range'
         }
     elif:
         #John 3:16 → single verse
