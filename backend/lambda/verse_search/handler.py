@@ -35,11 +35,25 @@ def parse_verse_reference(query):
             'verse_end': verse_end,
             'type': 'range'
         }
-    elif:
+    elif ':' in parts[1]:
         #John 3:16 → single verse
-
+        chapter_verse = parts[1].split(':')
+        chapter = chapter_verse[0]
+        verse_start = chapter_verse[1]
+        return {
+            'book': book,
+            'chapter': chapter,
+            'verse_start': verse_start,
+            'type': 'single_verse'
+        }
     else:
         #John 3 → first 5 verses of chapter
+        chapter = parts[1]
+        return {
+            'book': book,
+            'chapter': chapter,
+            'type': 'chapter'
+        }
 
 # Step 1: Receive the event from API Gateway and extract the query string
 def lambda_handler(event, context):
