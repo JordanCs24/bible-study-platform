@@ -55,6 +55,24 @@ def parse_verse_reference(query):
             'type': 'chapter'
         }
 
+def get_verse_from_s3(parsed_reference):
+    book = parsed_reference['book']
+    file_path = KJV_PREFIX + book + ".json"
+    response = s3.get_object(Bucket, Key=file_path)
+    file_content = response['body'].read().decode('utf-8')
+    
+    data.loads(file_content)
+    
+    for chapter_obj in data['chapters']:
+        
+    
+    
+    
+
+
+
+
+
 # Step 1: Receive the event from API Gateway and extract the query string
 def lambda_handler(event, context):
     query = event["queryStringParameters"].get('q')
@@ -98,29 +116,3 @@ def lambda_handler(event, context):
         }
 # Step 4: Format the result into a clean response
 # Step 5: Return the response back to API Gateway
-
-
-### _TESTING_ ###
-if __name__ == '__main__':
-    print("--- Handler Tests ---")
-    tests = [
-        {'queryStringParameters': {'q': 'John 3:16'}},
-        {'queryStringParameters': {'q': 'love'}},
-        {'queryStringParameters': {'q': 'Are we married in heaven'}}
-    ]
-    for test in tests:
-        result = lambda_handler(test, None)
-        print(result)
-        print('---')
-
-    print("--- Normalization Tests ---")
-    test_queries = [
-        "john3:16",
-        "JOHN 3 : 16",
-        "1chronicles 3:5",
-        "1Chronicals3:12",
-        "love",
-        "Are we married in heaven"
-    ]
-    for q in test_queries:
-        print(f"Input: {q} → Output: {normalize_query(q)}")
