@@ -4,6 +4,8 @@ import boto3   # talk to AWS services like S3 and Bedrock
 
 verse_pattern = re.compile(r'^[\d\s]*[a-zA-Z]+[\s\w]*\d+:\d+$') #Type 1 check
 
+s3 = boto3.client('s3')
+
 BUCKET_NAME = 'bible-platform-jordan'
 
 KJV_PREFIX = 'bible-data/kjv/'
@@ -58,13 +60,13 @@ def parse_verse_reference(query):
 def get_verse_from_s3(parsed_reference):
     book = parsed_reference['book']
     file_path = KJV_PREFIX + book + ".json"
-    response = s3.get_object(Bucket, Key=file_path)
+    response = s3.get_object(BUCKET_NAME, Key=file_path)
     file_content = response['body'].read().decode('utf-8')
     
     data.loads(file_content)
     
     for chapter_obj in data['chapters']:
-        
+        chapter_obj['chapter']
     
     
     
