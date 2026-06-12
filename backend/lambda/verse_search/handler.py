@@ -80,10 +80,29 @@ def get_verse_from_s3(parsed_reference):
             #Write the code for the other types        
             #Rewrite this after nap
             if (parsed_reference['type'] == 'range'):
+                matched_verses = []
                 verse_start = int(parsed_reference['verse_start'])
                 verse_end = int (parsed_reference['verse_end'])
                 for verse_obj in chapter_obj['verses']:
                     if verse_start <= int(verse_obj['verse']) <= verse_end:
+                        matched_verses.append(verse_obj)
+                return {
+                    'statusCode': 200,
+                    'body': json.dumps({
+                        'reference': book + ' ' + parsed_reference['chapter'] + ':' + parsed_reference['verse_start'] + '-' + parsed_reference['verse_end'],
+                        'verses': matched_verses
+                    })
+                }
+            if (parsed_reference['type'] == 'chapter'):
+                first_five = chapter_obj['verses'][0:5]
+                return {
+                    'statusCode': 200,
+                    'body': json.dumps({
+                        'reference': book + ' ' + parsed_reference['chapter'] + ':1-5',# what goes here for "John 3"? 
+                        'verses': first_five,
+                        'message': 'Showing the first 5 verses. Full chapter reading coming soon.'
+                })
+                }
                         
                     
 

@@ -47,9 +47,27 @@ class TestParseVerseReference(unittest.TestCase):
 class TestS3Lookup(unittest.TestCase):
 
     def test_john_3_16(self):
+        print("TESTING John 3:16\n")
         parsed = parse_verse_reference("John 3:16")
         result = get_verse_from_s3(parsed)
         print(result)
+        print('\n\n')
+        self.assertEqual(result['statusCode'], 200)
+        
+    def test_john_3_16_20(self):
+        print("TESTING John 3:16-20\n")
+        parsed = parse_verse_reference("John 3:16-20")
+        result = get_verse_from_s3(parsed)
+        print(result)
+        print('\n\n')
+        self.assertEqual(result['statusCode'], 200)
+    
+    def test_john_3(self):
+        print("TESTING John 3\n")
+        parsed = parse_verse_reference("John 3")
+        result = get_verse_from_s3(parsed)
+        print(result)
+        print('\n\n')
         self.assertEqual(result['statusCode'], 200)
 
 if __name__ == '__main__':
