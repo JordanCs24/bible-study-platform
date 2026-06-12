@@ -59,11 +59,19 @@ def parse_verse_reference(query):
 
 def get_verse_from_s3(parsed_reference):
     book = parsed_reference['book']
-    file_path = KJV_PREFIX + book + ".json"
-    response = s3.get_object(Bucket=BUCKET_NAME, Key=file_path)
-    file_content = response['Body'].read().decode('utf-8')
-    
-    data = json.loads(file_content)
+    try:
+        file_path = KJV_PREFIX + book + ".json"
+        response = s3.get_object(Bucket=BUCKET_NAME, Key=file_path)
+        file_content = response['Body'].read().decode('utf-8')
+        data = json.loads(file_content)
+    except Exception as e:
+        return {
+            'statusCode': 404,
+            'body': json.dumps({
+                'error': "That book could not be found try again. You may have misspelled it."
+            })
+        }
+        
     
     for chapter_obj in data['chapters']:
         if (chapter_obj['chapter'] == parsed_reference['chapter']):
@@ -103,6 +111,12 @@ def get_verse_from_s3(parsed_reference):
                         'message': 'Showing the first 5 verses. Full chapter reading coming soon.'
                 })
                 }
+    return {
+        'statusCode': 404,
+        'body': json.dumps({
+            'error': "That verse does not exist, try again are you looking for a different text if so say what you are trying to find."
+        })
+    }
                         
                     
 
