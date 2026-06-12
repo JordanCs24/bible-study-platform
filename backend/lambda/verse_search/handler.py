@@ -60,19 +60,32 @@ def parse_verse_reference(query):
 def get_verse_from_s3(parsed_reference):
     book = parsed_reference['book']
     file_path = KJV_PREFIX + book + ".json"
-    response = s3.get_object(BUCKET_NAME, Key=file_path)
-    file_content = response['body'].read().decode('utf-8')
+    response = s3.get_object(Bucket=BUCKET_NAME, Key=file_path)
+    file_content = response['Body'].read().decode('utf-8')
     
-    data.loads(file_content)
+    data = json.loads(file_content)
     
     for chapter_obj in data['chapters']:
-        chapter_obj['chapter']
-    
-    
-    
-
-
-
+        if (chapter_obj['chapter'] == parsed_reference['chapter']):
+            if (parsed_reference['type'] == 'single_verse'):
+                for verse_obj in chapter_obj['verses']:
+                    if(verse_obj['verse'] == parsed_reference['verse_start']):
+                        return {
+                            'statusCode': 200,
+                            'body': json.dumps({
+                                'reference': book + ' ' + parsed_reference['chapter'] + ':' + verse_obj['verse'],
+                                'text': verse_obj['text']
+                            })
+                        }
+            #Write the code for the other types        
+            #Rewrite this after nap
+            if (parsed_reference['type'] == 'range'):
+                verse_start = int(parsed_reference['verse_start'])
+                verse_end = int (parsed_reference['verse_end'])
+                for verse_obj in chapter_obj['verses']:
+                    if verse_start <= int(verse_obj['verse']) <= verse_end:
+                        
+                    
 
 
 # Step 1: Receive the event from API Gateway and extract the query string

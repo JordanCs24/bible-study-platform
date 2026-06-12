@@ -1,5 +1,5 @@
 import unittest
-from handler import normalize_query, parse_verse_reference
+from handler import normalize_query, parse_verse_reference, get_verse_from_s3
 
 class TestNormalizeQuery(unittest.TestCase):
     
@@ -43,6 +43,15 @@ class TestParseVerseReference(unittest.TestCase):
         self.assertEqual(result['book'], '1 John')
         self.assertEqual(result['chapter'], '3')
         self.assertEqual(result['verse_start'], '16')
+        
+class TestS3Lookup(unittest.TestCase):
+
+    def test_john_3_16(self):
+        parsed = parse_verse_reference("John 3:16")
+        result = get_verse_from_s3(parsed)
+        print(result)
+        self.assertEqual(result['statusCode'], 200)
 
 if __name__ == '__main__':
     unittest.main()
+    
