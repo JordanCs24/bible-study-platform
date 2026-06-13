@@ -18,6 +18,7 @@ def normalize_query(query):
     query = re.sub(r'(\d)([a-zA-Z])', r'\1 \2', query)
     return query.title()
 
+
 def parse_verse_reference(query):
     #Parse it to check to see if the
     parts = query.rsplit(' ', 1)
