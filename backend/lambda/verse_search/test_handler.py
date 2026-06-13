@@ -1,5 +1,5 @@
 import unittest
-from handler import normalize_query, parse_verse_reference, get_verse_from_s3
+from handler import normalize_query, parse_verse_reference, get_verse_from_s3,lambda_handler
 
 class TestNormalizeQuery(unittest.TestCase):
     
@@ -77,15 +77,39 @@ class TestS3Lookup(unittest.TestCase):
         print(result)
         print('\n\n')
         self.assertEqual(result['statusCode'], 404)
+
+class TestLambdaFunction(unittest.TestCase):
+    def test_john_3_16(self):
+        print("TESTING LAMBDA John 3:16\n")
+        event = {'queryStringParameters': {'q': 'John 3:16'}}
+        result = lambda_handler(event, None)
+        print(result)
+        print('\n\n')
+        self.assertEqual(result['statusCode'], 200)
         
-    def test_john_3(self):
-        print("TESTING Chronicals 3:13\n")
-        parsed = parse_verse_reference("Chronicals 3:13")
-        result = get_verse_from_s3(parsed)
+    def test_john_3_16_20(self):
+        print("TESTING LAMBDA John 3:16-20\n")
+        event = {'queryStringParameters': {'q': 'John 3:16-20'}}
+        result = lambda_handler(event, None)
+        print(result)
+        print('\n\n')
+        self.assertEqual(result['statusCode'], 200)
+    
+    def test_John_3(self):
+        print("TESTING LAMBDA John 3\n")
+        event = {'queryStringParameters': {'q': 'John 3'}}
+        result = lambda_handler(event, None)
+        print(result)
+        print('\n\n')
+        self.assertEqual(result['statusCode'], 200)
+    
+    def test_jonh_3(self):
+        print("TESTING LAMBDA Jonh 3\n")
+        event = {'queryStringParameters': {'q': 'Jonh 3'}}
+        result = lambda_handler(event, None)
         print(result)
         print('\n\n')
         self.assertEqual(result['statusCode'], 404)
-
 if __name__ == '__main__':
     unittest.main()
     

@@ -2,7 +2,7 @@ import json    # read and parse the Bible JSON files from S3
 import re      # detect query types using pattern matching
 import boto3   # talk to AWS services like S3 and Bedrock
 
-verse_pattern = re.compile(r'^[\d\s]*[a-zA-Z]+[\s\w]*\d+:\d+$') #Type 1 check
+verse_pattern = re.compile(r'^[\d\s]*[a-zA-Z]+[\s\w]*\d+(:\d+(-\d+)?)?$') #Type 1 check
 
 s3 = boto3.client('s3')
 
@@ -17,7 +17,7 @@ def normalize_query(query):
     query = re.sub(r'([a-zA-Z])(\d)', r'\1 \2', query)
     query = re.sub(r'(\d)([a-zA-Z])', r'\1 \2', query)
     return query.title()
-#TO DO: Write the logic for  this function
+
 def parse_verse_reference(query):
     #Parse it to check to see if the
     parts = query.rsplit(' ', 1)
@@ -142,10 +142,8 @@ def lambda_handler(event, context):
     # if the query matches the verse reference pattern (book name + colon + numbers)
     elif (re.match(verse_pattern, query)):
         print("Type 1: Direct verse reference")
-        return {
-        'statusCode': 200,
-        'body': json.dumps({'type': 'verse', 'query': query})
-        }
+        parsed_reference = parse_verse_reference(query)
+        return get_verse_from_s3(parsed_reference)
     #   look up the specific scripture directly from the S3 data file
     # elif the query is a single word with no spaces
     #   return the most well known verses containing that word via Bedrock
