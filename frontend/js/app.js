@@ -19,6 +19,8 @@ const BOOKS = {
   ]
 };
 
+const API_URL = 'https://bx0ddxpgwl.execute-api.us-east-1.amazonaws.com'
+
 let currentTranslation = "kjv";
 let selectedBookBtn = null;
 
@@ -28,16 +30,58 @@ function setTranslation(translation) { // Sets the translation based on what the
   document.getElementById("btn-web").classList.remove("active");
   document.getElementById("btn-" + translation).classList.add("active");
 }
+/**
+ * if data.error → show error
+  `else if data.text → single verse
+  else if data.verses → range or chapter`
+ */
+function displayResults(data) {
+  const container = document.getElementById("results-container");
+  if (data.error) {
+    container.innerHTML =`
+    <div class="verse-card">
+      <div class="verse-text">${data.error}</div>
+    </div>
+  `
+  } else if (data.text) {
+    container.innerHTML = `
+    <div class="verse-card">
+      <div class="verse-reference">${data.reference}</div>
+      <div class="verse-text">${data.text}</div>
+    </div>`;
 
-function handleSearch() {
+  } else if (data.verses) {
+    verseCards = data.verses.map(data => `
+    <div class="verse-card">
+      <div class="verse-number">${verse.verse}</div>
+      <div class="verse-text">${verse.text}</div>
+    </div>
+  `).join("");
+
+    container.innerHTML = `
+    <div class="verse-reference">${data.reference}</div>
+    ${verseCards}
+  `;
+
+  }
+}
+
+async function handleSearch() {
   const query = document.getElementById("search-input").value.trim();
   if (!query) return;
-  showResults([
-    { // Returns placeholder data at the moment 
-      reference: "John 3:16",
-      text: "For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life."
-    }
-  ]);
+  
+  // show the user something is happening
+  document.getElementById("results-container").innerHTML = 
+    "<p class='placeholder-text'>Searching...</p>";
+  
+  try {
+    const response = await fetch(`${API_URL}/search?q=${encodeURIComponent(query)}`);
+    const data = await response.json();
+    displayResults(data);
+  } catch (error) {
+    document.getElementById("results-container").innerHTML = 
+      "<p class='placeholder-text'>Something went wrong. Please try again.</p>";
+  }
 }
 
 function showResults(verses) {

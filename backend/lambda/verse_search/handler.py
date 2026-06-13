@@ -56,6 +56,18 @@ def parse_verse_reference(query):
             'chapter': chapter,
             'type': 'chapter'
         }
+                            
+def build_response(status_code, body):
+    return {
+        'statusCode': status_code,
+        'headers': {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Headers': 'Content-Type',
+            'Access-Control-Allow-Methods': 'GET, OPTIONS'
+        },
+        'body': json.dumps(body)
+    }
+
 
 def get_verse_from_s3(parsed_reference):
     book = parsed_reference['book']
@@ -65,26 +77,16 @@ def get_verse_from_s3(parsed_reference):
         file_content = response['Body'].read().decode('utf-8')
         data = json.loads(file_content)
     except Exception as e:
-        return {
-            'statusCode': 404,
-            'body': json.dumps({
-                'error': "That book could not be found try again. You may have misspelled it."
-            })
-        }
-        
+        return build_response(404, {'error': "That book could not be found try again. You may have misspelled it."})
     
     for chapter_obj in data['chapters']:
         if (chapter_obj['chapter'] == parsed_reference['chapter']):
             if (parsed_reference['type'] == 'single_verse'):
                 for verse_obj in chapter_obj['verses']:
                     if(verse_obj['verse'] == parsed_reference['verse_start']):
-                        return {
-                            'statusCode': 200,
-                            'body': json.dumps({
-                                'reference': book + ' ' + parsed_reference['chapter'] + ':' + verse_obj['verse'],
-                                'text': verse_obj['text']
-                            })
-                        }
+                        return build_response(200, {
+                            'reference': book + ' ' + parsed_reference['chapter'] + ':' + verse_obj['verse'],
+                            'text': verse_obj['text']})
             #Write the code for the other types        
             #Rewrite this after nap
             if (parsed_reference['type'] == 'range'):
@@ -94,50 +96,32 @@ def get_verse_from_s3(parsed_reference):
                 for verse_obj in chapter_obj['verses']:
                     if verse_start <= int(verse_obj['verse']) <= verse_end:
                         matched_verses.append(verse_obj)
-                return {
-                    'statusCode': 200,
-                    'body': json.dumps({
-                        'reference': book + ' ' + parsed_reference['chapter'] + ':' + parsed_reference['verse_start'] + '-' + parsed_reference['verse_end'],
-                        'verses': matched_verses
-                    })
-                }
+                return build_response(200, {
+                    'reference': book + ' ' + parsed_reference['chapter'] + ':' + parsed_reference['verse_start'] + '-' + parsed_reference['verse_end'],
+                    'verses': matched_verses
+                })
             if (parsed_reference['type'] == 'chapter'):
                 first_five = chapter_obj['verses'][0:5]
-                return {
-                    'statusCode': 200,
-                    'body': json.dumps({
-                        'reference': book + ' ' + parsed_reference['chapter'] + ':1-5',# what goes here for "John 3"? 
-                        'verses': first_five,
-                        'message': 'Showing the first 5 verses. Full chapter reading coming soon.'
+                return build_response(200, {
+                    'reference': book + ' ' + parsed_reference['chapter'] + ':1-5',# what goes here for "John 3"? 
+                    'verses': first_five,
+                    'message': 'Showing the first 5 verses. Full chapter reading coming soon.'
                 })
-                }
-    return {
-        'statusCode': 404,
-        'body': json.dumps({
-            'error': "That verse does not exist, try again are you looking for a different text if so say what you are trying to find."
-        })
-    }
+    return build_response(404, {
+                'error': "That verse does not exist, try again are you looking for a different text if so say what you are trying to find."
+    })
                         
-                    
-
-
 # Step 1: Receive the event from API Gateway and extract the query string
 def lambda_handler(event, context):
     query = event["queryStringParameters"].get('q')
     # Step 2 Validation: if the query is empty or less than 3 characters:
     #   return a message saying "please enter a more specific search"
     if(query is None):
-        return {
-            'statusCode': 400,
-            'body': json.dumps({'error': 'Your search field is empty'})
-        }
+            return build_response(400, {'error': 'Your search field is empty'})
         
     query = normalize_query(query) #Handles the edgecases
     if(len(query) < 3):
-        return {
-            'statusCode': 400,
-            'body': json.dumps({'error': 'Please enter a more specific search'})
-        }
+        return build_response(400, {'error': 'Please enter a more specific search'})
     # Step 3: Detect the query type and route accordingl
     # if the query matches the verse reference pattern (book name + colon + numbers)
     elif (re.match(verse_pattern, query)):
@@ -149,16 +133,10 @@ def lambda_handler(event, context):
     #   return the most well known verses containing that word via Bedrock
     elif ' ' not in query:
         print("Type 2: Single keyword")
-        return {
-            'statusCode': 200,
-            'body': json.dumps({'type': 'keyword', 'query': query})
-        }   
+        return build_response(200, {'type': 'keyword', 'query': query})
      #   send to Bedrock for a warm thoughtful conversational response
     else:
         print("Type 3: Conversational question")
-        return {
-            'statusCode': 200,
-            'body': json.dumps({'type': 'conversational', 'query': query})
-        }
+        return build_response(200, {'type': 'conversational', 'query': query})
 # Step 4: Format the result into a clean response
 # Step 5: Return the response back to API Gateway
