@@ -31,3 +31,4 @@ jobs:
           aws lambda update-function-code \
             --function-name bible-verse-search \
             --zip-file fileb://backend/lambda/verse_search/function.zip
+            
