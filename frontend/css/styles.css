@@ -112,10 +112,7 @@ main {
 .verse-card {
   border-bottom: 1px solid #e0d8cc;
   padding: 1rem 0;
-  display: flex;
-  align-items: baseline;
 }
-
 .verse-card:last-child {
   border-bottom: none;
 }
@@ -135,8 +132,7 @@ main {
   font-size: 0.7rem;
   font-weight: bold;
   color: #1a3a2a;
-  vertical-align: super;
-  margin-right: 0.3rem;
+  margin-right: 0.2rem;
 }
 
 .browse-section h2 {

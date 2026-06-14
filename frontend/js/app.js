@@ -51,17 +51,14 @@ function displayResults(data) {
     </div>`;
 
   } else if (data.verses) {
-    const verseCards = data.verses.map(verse => `
-    <div class="verse-card">
-      <span class="verse-number">${verse.verse}</span>${verse.text}
-    </div>
-  `).join("");
-
+    const verseText = data.verses.map(verse => `<sup class="verse-number">${verse.verse}</sup> ${verse.text} `).join("");
+  
     container.innerHTML = `
-    <div class="verse-reference">${data.reference}</div>
-    ${verseCards}
-  `;
-
+      <div class="verse-card">
+        <div class="verse-reference">${data.reference}</div>
+        <div class="verse-text">${verseText}</div>
+      </div>
+    `;
   }
 }
 
