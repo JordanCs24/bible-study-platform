@@ -51,10 +51,9 @@ function displayResults(data) {
     </div>`;
 
   } else if (data.verses) {
-    verseCards = data.verses.map(data => `
+    const verseCards = data.verses.map(verse => `
     <div class="verse-card">
-      <div class="verse-number">${verse.verse}</div>
-      <div class="verse-text">${verse.text}</div>
+      <span class="verse-number">${verse.verse}</span>${verse.text}
     </div>
   `).join("");
 

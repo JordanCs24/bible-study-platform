@@ -112,6 +112,8 @@ main {
 .verse-card {
   border-bottom: 1px solid #e0d8cc;
   padding: 1rem 0;
+  display: flex;
+  align-items: baseline;
 }
 
 .verse-card:last-child {
@@ -127,6 +129,14 @@ main {
 .verse-text {
   font-size: 1rem;
   color: #2c2c2c;
+}
+
+.verse-number {
+  font-size: 0.7rem;
+  font-weight: bold;
+  color: #1a3a2a;
+  vertical-align: super;
+  margin-right: 0.3rem;
 }
 
 .browse-section h2 {
