@@ -139,7 +139,7 @@ def call_bedrock(user_message, max_tokens):
         }
     
         response = bedrock.invoke_model(
-            modelId="anthropic.claude-3-haiku-20240307-v1:0",
+            modelId="anthropic.claude-haiku-4-5-20251001-v1:0",
             body=json.dumps(body)
         )
         result = json.loads(response['body'].read())
@@ -149,18 +149,23 @@ def call_bedrock(user_message, max_tokens):
         send_alert(str(e))
         try:
             fallback_body = {
-                "inputText": user_message,
-                "textGenerationConfig": {
-                    "maxTokenCount": max_tokens,
-                    "temperature": 0.7
-                }
+                "messages": [
+                    {
+                        "role": "user",
+                        "content": [
+                            {
+                                "text": user_message
+                            }
+                        ]
+                    }
+                ]
             }
             fallback_response = bedrock.invoke_model(
-                modelId="amazon.titan-text-lite-v1",
+                modelId="amazon.nova-lite-v1:0",
                 body=json.dumps(fallback_body)
             )
             fallback_result = json.loads(fallback_response['body'].read())
-            return fallback_result['results'][0]['outputText']
+            return fallback_result['output']['message']['content'][0]['text']
 
         except Exception as fallback_error:
             print(f"Fallback model error: {str(fallback_error)}")
