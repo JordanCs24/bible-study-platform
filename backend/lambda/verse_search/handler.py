@@ -139,7 +139,7 @@ def call_bedrock(user_message, max_tokens):
         }
     
         response = bedrock.invoke_model(
-            modelId="anthropic.claude-haiku-4-5-20251001-v1:0",
+            modelId="us.anthropic.claude-haiku-4-5-20251001-v1:0",
             body=json.dumps(body)
         )
         result = json.loads(response['body'].read())
