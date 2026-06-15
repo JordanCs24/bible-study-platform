@@ -161,7 +161,7 @@ def call_bedrock(user_message, max_tokens):
                 ]
             }
             fallback_response = bedrock.invoke_model(
-                modelId="amazon.nova-lite-v1:0",
+                modelId="us.amazon.nova-lite-v1:0",
                 body=json.dumps(fallback_body)
             )
             fallback_result = json.loads(fallback_response['body'].read())
