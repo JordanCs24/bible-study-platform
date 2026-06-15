@@ -5,8 +5,20 @@ import boto3   # talk to AWS services like S3 and Bedrock
 verse_pattern = re.compile(r'^[\d\s]*[a-zA-Z]+[\s\w]*\d+(:\d+(-\d+)?)?$') #Type 1 check
 
 s3 = boto3.client('s3')
+bedrock = boto3.client('bedrock-runtime', region_name='us-east-1')
+sns = boto3.client('sns', region_name='us-east-1')
 
 BUCKET_NAME = 'bible-platform-jordan'
+
+SYSTEM_PROMPT = """You are a compassionate and knowledgeable Bible study companion. 
+You respond with warmth and genuine care. You never lecture, moralize, or make anyone feel judged. 
+You offer scripture as a gift, not a correction. When someone asks a deep or difficult question, 
+you engage with it honesty and thoughtfully but based on scripture not just opinion. You always cite specific verses when they are relevant. 
+You are not a preacher. You are a friend who knows the Bible well.
+When given a single keyword, return the 3 most well known verses related to that word. 
+Format them cleanly with the reference first, then the verse text."""
+
+SNS_TOPIC_ARN = 'arn:aws:sns:us-east-1:646177707976:Bible-Study-Platform'
 
 KJV_PREFIX = 'bible-data/kjv/'
 # Function to handle all edge cases 
@@ -111,6 +123,58 @@ def get_verse_from_s3(parsed_reference):
     return build_response(404, {
                 'error': "That verse does not exist, try again are you looking for a different text if so say what you are trying to find."
     })
+    
+def call_bedrock(user_message, max_tokens):
+    try: 
+        body = {
+            "anthropic_version": "bedrock-2023-05-31",
+            "max_tokens": max_tokens,
+            "system": SYSTEM_PROMPT,
+            "messages": [
+                    {
+                    "role": "user",
+                    "content": user_message
+                }
+            ]
+        }
+    
+        response = bedrock.invoke_model(
+            modelId="anthropic.claude-3-haiku-20240307-v1:0",
+            body=json.dumps(body)
+        )
+        result = json.loads(response['body'].read())
+        return result['content'][0]['text']
+    except Exception as e:
+        print(f"Bedrock Error: {str(e)}")
+        send_alert(str(e))
+        try:
+            fallback_body = {
+                "inputText": user_message,
+                "textGenerationConfig": {
+                    "maxTokenCount": max_tokens,
+                    "temperature": 0.7
+                }
+            }
+            fallback_response = bedrock.invoke_model(
+                modelId="amazon.titan-text-lite-v1",
+                body=json.dumps(fallback_body)
+            )
+            fallback_result = json.loads(fallback_response['body'].read())
+            return fallback_result['results'][0]['outputText']
+
+        except Exception as fallback_error:
+            print(f"Fallback model error: {str(fallback_error)}")
+            return None
+
+def send_alert(error_message):
+    try: 
+        sns.publish(
+            TopicArn=SNS_TOPIC_ARN,
+            Subject='Bible Platform Alert - AI Service Down',
+            Message=f'Bedrock is unavailable. Your users cannot get AI responses.\n\nError details: {error_message}'
+        )
+    except Exception as e:
+        print(f"SNS alert failed: {str(e)}")
                         
 # Step 1: Receive the event from API Gateway and extract the query string
 def lambda_handler(event, context):
@@ -134,10 +198,16 @@ def lambda_handler(event, context):
     #   return the most well known verses containing that word via Bedrock
     elif ' ' not in query:
         print("Type 2: Single keyword")
-        return build_response(200, {'type': 'keyword', 'query': query})
+        ai_response = call_bedrock(f"Find the 3 most well known Bible verses for: {query}", 300)
+        if ai_response is None:
+            return build_response(503, {'error': 'Our AI is currently unavailable. Please try again shortly.'})
+        return build_response(200, {'verse': ai_response})
      #   send to Bedrock for a warm thoughtful conversational response
     else:
         print("Type 3: Conversational question")
-        return build_response(200, {'type': 'conversational', 'query': query})
+        ai_response = call_bedrock(query, 600)
+        if ai_response is None:
+            return build_response(503, {'error': 'Our AI is currently unavailable. Please try again shortly.'})
+        return build_response(200, {'verse': ai_response})
 # Step 4: Format the result into a clean response
 # Step 5: Return the response back to API Gateway
