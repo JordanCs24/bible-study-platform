@@ -182,7 +182,12 @@ main {
     color: #f9f6f0;
     border-color: #1a3a2a;
 }
-
+.coming-soon {
+  font-size: 0.85rem;
+  color: #aaa;
+  font-style: italic;
+  margin-bottom: 1rem;
+}
 footer {
   text-align: center;
   padding: 2rem;
