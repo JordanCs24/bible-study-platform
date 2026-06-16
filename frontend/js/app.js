@@ -62,7 +62,7 @@ function displayResults(data) {
   } else if (data.verse) {
     container.innerHTML = `
     <div class="verse-card">
-      <div class="verse-text">${data.verse}</div>
+      <div class="verse-text">${marked.parse(data.verse)}</div>
     </div>`;
 }
 }
