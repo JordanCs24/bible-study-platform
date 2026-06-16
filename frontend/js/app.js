@@ -59,7 +59,12 @@ function displayResults(data) {
         <div class="verse-text">${verseText}</div>
       </div>
     `;
-  }
+  } else if (data.verse) {
+    container.innerHTML = `
+    <div class="verse-card">
+      <div class="verse-text">${data.verse}</div>
+    </div>`;
+}
 }
 
 async function handleSearch() {
