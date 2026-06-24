@@ -239,7 +239,6 @@ KJV Bible data sourced from
 aruljohn/Bible-kjv,
 public domain.
 
-WEB translation coming in Phase 2.
 
 Security
 
@@ -294,4 +293,4 @@ Aspiring Cloud Engineer
 Built as a portfolio project for cloud engineering internship applications,
 demonstrating hands-on AWS architecture, serverless backend development,
 AI integration, fault tolerance design, and cloud cost management.
-ShareProject contentAWS Cloud and AI LearningCreated by youAdd PDFs, documents, or other text to reference in this project.
+ShareProject content AWS Cloud and AI Learning Created by you Add PDFs, documents, or other text to reference in this project.

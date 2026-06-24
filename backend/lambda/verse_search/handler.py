@@ -104,7 +104,6 @@ def get_verse_from_s3(parsed_reference):
                             'reference': book + ' ' + parsed_reference['chapter'] + ':' + verse_obj['verse'],
                             'text': verse_obj['text']})
             #Write the code for the other types        
-            #Rewrite this after nap
             if (parsed_reference['type'] == 'range'):
                 matched_verses = []
                 verse_start = int(parsed_reference['verse_start'])
