@@ -3,6 +3,7 @@ import re      # detect query types using pattern matching
 import boto3   # talk to AWS services like S3 and Bedrock
 
 verse_pattern = re.compile(r'^[\d\s]*[a-zA-Z]+[\s\w]*\d+(:\d+(-\d+)?)?$') #Type 1 check
+# trivial change just to trigger the workflow
 
 s3 = boto3.client('s3')
 bedrock = boto3.client('bedrock-runtime', region_name='us-east-1')
