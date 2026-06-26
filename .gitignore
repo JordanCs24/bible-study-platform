@@ -221,3 +221,6 @@ __marimo__/
 .venv
 env
 venv
+
+#Mac system info
+.DS_Store
