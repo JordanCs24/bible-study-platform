@@ -1,7 +1,7 @@
 import json
 import os
 
-RAW_FOLDER = "./frontend/data/Bible-kjv"
+RAW_FOLDER = "./data/Bible-kjv"
 
 
 BOOK_ORDER = [
