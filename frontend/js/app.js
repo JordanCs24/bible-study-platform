@@ -66,7 +66,7 @@ function displayResults(data) {
     </div>`;
 }
 }
-
+/* Need a trivial change to test frontend workflow*/
 async function handleSearch() {
   const query = document.getElementById("search-input").value.trim();
   if (!query) return;
