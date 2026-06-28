@@ -21,12 +21,14 @@ jobs:
       - name: Configure AWS credentials via OIDC
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::646177707976:role/github-actions-bible-frontend-deploy
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_DEPLOY_ROLE_ARN }}:role/github-actions-bible-frontend-deploy
           aws-region: us-east-1
 
       - name: Sync frontend to S3
         run: |
-          aws s3 sync ./frontend/ s3://studybiblewithme-frontend/ \
+          aws s3 sync ./frontend/ s3://${{ vars.FRONTEND_BUCKET }}/ \
             --delete \
             --exclude ".DS_Store" \
             --exclude "*.map"
+      - name: Invalidate CloudFront cache after S3
+        run: aws cloudfront create-invalidation --distribution-id ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*" 
