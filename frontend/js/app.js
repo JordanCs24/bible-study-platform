@@ -1,4 +1,4 @@
-// Deploying Test for the frontend Invalidation//
+// Test for the frontend Invalidation//
 const BOOKS = {
   oldTestament: [
     "Genesis", "Exodus", "Leviticus", "Numbers", "Deuteronomy",
