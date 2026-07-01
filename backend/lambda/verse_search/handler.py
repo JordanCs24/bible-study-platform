@@ -213,7 +213,7 @@ def lambda_handler(event, context):
      #   send to Bedrock for a warm thoughtful conversational response
     else:
         print("Type 3: Conversational question")
-        ai_response = call_bedrock(query, 600)
+        ai_response = call_bedrock(query, 700)
         if ai_response is None:
             return build_response(503, {'error': 'Our AI is currently unavailable. Please try again shortly.'})
         return build_response(200, {'verse': ai_response})

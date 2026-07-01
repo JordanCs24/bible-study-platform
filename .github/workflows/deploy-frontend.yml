@@ -26,9 +26,9 @@ jobs:
 
       - name: Sync frontend to S3
         run: |
-          aws s3 sync ./frontend/ s3://${{ vars.FRONTEND_BUCKET }}/ \
+          aws s3 sync ./frontend/ s3://${{ secrets.FRONTEND_BUCKET }}-frontend/ \
             --delete \
             --exclude ".DS_Store" \
             --exclude "*.map"
       - name: Invalidate CloudFront cache after S3
-        run: aws cloudfront create-invalidation --distribution-id ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*" 
+        run: aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
