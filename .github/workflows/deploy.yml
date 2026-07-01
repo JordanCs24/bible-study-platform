@@ -24,7 +24,7 @@ jobs:
       - name: Configure AWS credentials via OIDC
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::646177707976:role/github-actions-bible-lambda-deploy
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ID }}:role/github-actions-bible-lambda-deploy
           aws-region: us-east-1
 
       - name: Zip Lambda function
